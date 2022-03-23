@@ -266,6 +266,7 @@ static void MainDlg_OnDeviceChange(HWND hwnd, DWORD event,
                             HeapFree(GetProcessHeap(), 0, szName);
                             break;
                         }
+                        HeapFree(GetProcessHeap(), 0, szName);
                     }
                     SetupDiDestroyDeviceInfoList(hDevInfo);
                 }
