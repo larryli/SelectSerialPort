@@ -87,6 +87,7 @@ static LONG GetRegValueStr(HKEY hKey, PTSTR pName, PTSTR *pValue)
     ret = RegQueryValueEx(hKey, pName, NULL, NULL, (PBYTE)*pValue, &cbValue);
     if (ret != ERROR_SUCCESS) {
         HeapFree(GetProcessHeap(), 0, pValue);
+        *pValue = NULL;
     }
     return ret;
 }
@@ -118,6 +119,7 @@ static BOOL GetDeviceRegPropStr(HDEVINFO hDevInfo,
         hDevInfo, pDevInfoData, dwProp, NULL, (PBYTE)*pValue, cbValue, NULL);
     if (ret == FALSE) {
         HeapFree(GetProcessHeap(), 0, pValue);
+        *pValue = NULL;
     }
     return ret;
 }
