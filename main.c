@@ -22,10 +22,10 @@
 #define SPDRP_INSTALL_STATE (0x00000022)
 #endif
 
+#ifndef HANDLE_WM_DEVICECHANGE
 #define HANDLE_WM_DEVICECHANGE(hwnd, wParam, lParam, fn)                       \
     ((fn)((hwnd), (DWORD)(wParam), (PDEV_BROADCAST_PORT)lParam), 0)
-
-#define NELEMS(a) (sizeof(a) / sizeof((a)[0]))
+#endif
 
 static INT_PTR CALLBACK MainDlgProc(HWND, UINT, WPARAM, LPARAM);
 static BOOL MainDlg_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam);
@@ -54,7 +54,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
     wcx.hInstance = hInstance;
     wcx.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDR_ICO_MAIN));
-    wcx.lpszClassName = TEXT("SelectSeClass");
+    wcx.lpszClassName = TEXT("SelSerialPortClass");
     if (!RegisterClassEx(&wcx))
         return 0;
 
