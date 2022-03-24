@@ -51,7 +51,8 @@ POC_PROJECT_ZIPEXTRA = #
 # 
 SelectSerialPort.exe: \
 	output\main.obj \
-	output\main.res
+	output\main.res \
+	output\SerialPort.obj
 	$(LINK) $(LINKFLAGS) -out:"$@" $**
 
 # 
@@ -59,7 +60,8 @@ SelectSerialPort.exe: \
 # 
 output\main.obj: \
 	main.c \
-	main.h
+	main.h \
+	SerialPort.h
 	$(CC) $(CCFLAGS) "$!" -Fo"$@"
 
 # 
@@ -70,6 +72,14 @@ output\main.res: \
 	main.h \
 	main.ico
 	$(RC) $(RCFLAGS) "$!" -Fo"$@"
+
+# 
+# Build SerialPort.obj.
+# 
+output\SerialPort.obj: \
+	SerialPort.c \
+	SerialPort.h
+	$(CC) $(CCFLAGS) "$!" -Fo"$@"
 
 .SILENT:
 
