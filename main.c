@@ -74,9 +74,13 @@ static void SetPortListComStr(HWND hwnd, LONG id, int iCom, PTSTR szStr)
         } else if (val > iCom) {
             last = cur - 1;
         } else {
+            BOOL bSel = ComboBox_GetCurSel(hList) == cur;
             ComboBox_DeleteString(hList, cur);
             ComboBox_InsertString(hList, cur, szStr);
             ComboBox_SetItemData(hList, cur, iCom);
+            if (bSel) {
+                ComboBox_SetCurSel(hList, cur);
+            }
             return;
         }
     }
@@ -88,8 +92,8 @@ static BOOL MainDlg_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 {
     HSERIALPORT hSerialPort = SerialPortCreateEnum(FALSE);
     if (hSerialPort != INVALID_HANDLE_VALUE) {
-        int iCom = -1;
-        PTSTR szName = NULL;
+        int iCom;
+        PTSTR szName;
         for (DWORD i = 0;
              SerialPortEnumDevice(hSerialPort, i, TRUE, &iCom, &szName); i++) {
             SetPortListComStr(hwnd, ID_PORTLIST, iCom, szName);

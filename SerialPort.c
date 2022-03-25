@@ -105,6 +105,7 @@ BOOL SerialPortArrivalDevice(PVOID lParam, PINT pCom, PTSTR *pStr)
                     return TRUE;
                 }
                 SerialPortFreeString(*pStr);
+                *pStr = NULL;
             }
             SerialPortDestroyEnum(hSerialPort);
         }
