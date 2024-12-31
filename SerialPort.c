@@ -1,4 +1,4 @@
-﻿#include "SerialPort.h"
+#include "SerialPort.h"
 
 #include <dbt.h>
 #include <setupapi.h>
@@ -88,9 +88,9 @@ BOOL SerialPortRegisterNotification(HWND hwnd)
     return FALSE;
 }
 
-BOOL SerialPortArrivalDevice(PVOID lParam, PINT pCom, PTSTR *pStr)
+BOOL SerialPortArrivalDevice(DWORD_PTR dwData, PINT pCom, PTSTR *pStr)
 {
-    PDEV_BROADCAST_PORT p = (PDEV_BROADCAST_PORT)lParam;
+    PDEV_BROADCAST_PORT p = (PDEV_BROADCAST_PORT)dwData;
     if (p == NULL || p->dbcp_devicetype != DBT_DEVTYP_PORT) {
         return FALSE;
     }
@@ -113,14 +113,14 @@ BOOL SerialPortArrivalDevice(PVOID lParam, PINT pCom, PTSTR *pStr)
     return FALSE;
 }
 
-BOOL SerialPortRemoveDevice(PVOID lParam, PINT pCom, PTSTR *pStr)
+BOOL SerialPortRemoveDevice(DWORD_PTR dwData, PINT pCom, PTSTR *pStr)
 {
-    PDEV_BROADCAST_PORT p = (PDEV_BROADCAST_PORT)lParam;
+    PDEV_BROADCAST_PORT p = (PDEV_BROADCAST_PORT)dwData;
     if (p == NULL || p->dbcp_devicetype != DBT_DEVTYP_PORT) {
         return FALSE;
     }
     if (_stscanf(p->dbcp_name, TEXT("COM%d"), pCom) != -1) {
-        ULONG size = (_tcslen(p->dbcp_name) + 1) * sizeof(TCHAR);
+        SIZE_T size = (_tcslen(p->dbcp_name) + 1) * sizeof(TCHAR);
         *pStr = (PTSTR)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, size);
         if (*pStr == NULL) {
             return FALSE;

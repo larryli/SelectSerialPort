@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #define WIN32_LEAN_AND_MEAN
 #define NOCRYPT
@@ -6,10 +6,11 @@
 #define NOMCX
 #define NOIME
 #include <windows.h>
+#include <windowsx.h>
 
 #ifndef HANDLE_WM_DEVICECHANGE
 #define HANDLE_WM_DEVICECHANGE(hwnd, wParam, lParam, fn)                       \
-    ((fn)((hwnd), (DWORD)(wParam), (PVOID)lParam), 0)
+    (LRESULT)(DWORD)(BOOL)(fn)((hwnd), (UINT)(wParam), (DWORD)(lParam))
 #endif
 
 #define SERIALPORT_ARRIVALDEVICE 0x8000
@@ -24,5 +25,5 @@ VOID SerialPortDestroyEnum(HSERIALPORT hSerialPort);
 VOID SerialPortFreeString(PTSTR pStr);
 
 BOOL SerialPortRegisterNotification(HWND hwnd);
-BOOL SerialPortArrivalDevice(PVOID lParam, PINT pCom, PTSTR *pStr);
-BOOL SerialPortRemoveDevice(PVOID lParam, PINT pCom, PTSTR *pStr);
+BOOL SerialPortArrivalDevice(DWORD_PTR dwData, PINT pCom, PTSTR *pStr);
+BOOL SerialPortRemoveDevice(DWORD_PTR dwData, PINT pCom, PTSTR *pStr);

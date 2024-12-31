@@ -18,7 +18,8 @@
 static INT_PTR CALLBACK MainDlgProc(HWND, UINT, WPARAM, LPARAM);
 static BOOL MainDlg_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam);
 static void MainDlg_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify);
-static void MainDlg_OnDeviceChange(HWND hwnd, DWORD event, PVOID p);
+static BOOL MainDlg_OnDeviceChange(HWND hwnd, UINT nEventType,
+                                   DWORD_PTR dwData);
 static void MainDlg_OnClose(HWND hwnd);
 
 static HANDLE ghInstance;
@@ -45,9 +46,16 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     if (!RegisterClassEx(&wcx))
         return 0;
 
-    return DialogBox(hInstance, MAKEINTRESOURCE(DLG_MAIN), NULL,
-                     (DLGPROC)MainDlgProc);
+    return (int)DialogBox(hInstance, MAKEINTRESOURCE(DLG_MAIN), NULL,
+                          (DLGPROC)MainDlgProc);
 }
+
+#ifndef HANDLE_DLGMSG
+#define HANDLE_DLGMSG(hWnd, message, fn)                                       \
+    case (message):                                                            \
+        return (SetDlgMsgResult(                                               \
+            hWnd, uMsg, HANDLE_##message((hWnd), (wParam), (lParam), (fn))))
+#endif
 
 static INT_PTR CALLBACK MainDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam,
                                     LPARAM lParam)
@@ -68,7 +76,7 @@ static void SetPortListComStr(HWND hwnd, LONG id, int iCom, PTSTR szStr)
     int last = ComboBox_GetCount(hList) - 1;
     while (start <= last) {
         int cur = (start + last) / 2;
-        int val = ComboBox_GetItemData(hList, cur);
+        int val = (int)ComboBox_GetItemData(hList, cur);
         if (val < iCom) {
             start = cur + 1;
         } else if (val > iCom) {
@@ -110,7 +118,7 @@ static BOOL MainDlg_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 static void SelectPort(HWND hwnd)
 {
     HWND hList = GetDlgItem(hwnd, ID_PORTLIST);
-    int iCom = ComboBox_GetItemData(hList, ComboBox_GetCurSel(hList));
+    int iCom = (int)ComboBox_GetItemData(hList, ComboBox_GetCurSel(hList));
     TCHAR szBuf[8];
     _sntprintf(szBuf, 8, TEXT("COM%d"), iCom);
     HWND hEdit = GetDlgItem(hwnd, ID_PORT);
@@ -134,24 +142,25 @@ static void MainDlg_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
     }
 }
 
-static void MainDlg_OnDeviceChange(HWND hwnd, DWORD event, PVOID p)
+static BOOL MainDlg_OnDeviceChange(HWND hwnd, UINT nEventType, DWORD_PTR dwData)
 {
     INT iCom;
     PTSTR szName;
-    switch (event) {
+    switch (nEventType) {
     case SERIALPORT_ARRIVALDEVICE:
-        if (SerialPortArrivalDevice(p, &iCom, &szName)) {
+        if (SerialPortArrivalDevice(dwData, &iCom, &szName)) {
             SetPortListComStr(hwnd, ID_PORTLIST, iCom, szName);
             SerialPortFreeString(szName);
         }
         break;
     case SERIALPORT_REMOVEDEVICE:
-        if (SerialPortRemoveDevice(p, &iCom, &szName)) {
+        if (SerialPortRemoveDevice(dwData, &iCom, &szName)) {
             SetPortListComStr(hwnd, ID_PORTLIST, iCom, szName);
             SerialPortFreeString(szName);
         }
         break;
     }
+    return TRUE;
 }
 
 static void MainDlg_OnClose(HWND hwnd) { EndDialog(hwnd, 0); }
