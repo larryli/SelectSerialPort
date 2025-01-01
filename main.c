@@ -50,21 +50,14 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                           (DLGPROC)MainDlgProc);
 }
 
-#ifndef HANDLE_DLGMSG
-#define HANDLE_DLGMSG(hWnd, message, fn)                                       \
-    case (message):                                                            \
-        return (SetDlgMsgResult(                                               \
-            hWnd, uMsg, HANDLE_##message((hWnd), (wParam), (lParam), (fn))))
-#endif
-
 static INT_PTR CALLBACK MainDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam,
                                     LPARAM lParam)
 {
     switch (uMsg) {
-        HANDLE_DLGMSG(hwnd, WM_INITDIALOG, MainDlg_OnInitDialog);
-        HANDLE_DLGMSG(hwnd, WM_COMMAND, MainDlg_OnCommand);
-        HANDLE_DLGMSG(hwnd, WM_DEVICECHANGE, MainDlg_OnDeviceChange);
-        HANDLE_DLGMSG(hwnd, WM_CLOSE, MainDlg_OnClose);
+        HANDLE_MSG(hwnd, WM_INITDIALOG, MainDlg_OnInitDialog);
+        HANDLE_MSG(hwnd, WM_COMMAND, MainDlg_OnCommand);
+        HANDLE_MSG(hwnd, WM_DEVICECHANGE, MainDlg_OnDeviceChange);
+        HANDLE_MSG(hwnd, WM_CLOSE, MainDlg_OnClose);
     }
     return FALSE;
 }
